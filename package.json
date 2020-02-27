@@ -1,29 +1,32 @@
 {
-  "name": "babelelibrary",
-  "version": "0.0.1",
-  "description": "Tools and Utilities for Babele project",
-  "main": "index.js",
-  "scripts": {
-    "build": "tsc"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sidmonta/BabeleLibrary.git"
-  },
-  "keywords": [
-    "lod",
-    "typescript",
-    "tools",
-    "fp"
-  ],
-  "author": "Luca Montanera <sidmonta.15@gmail.com>",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/sidmonta/BabeleLibrary/issues"
-  },
-  "homepage": "https://github.com/sidmonta/BabeleLibrary#readme",
-  "devDependencies": {
-    "node-ts": "^5.0.4",
-    "typescript": "^3.8.2"
-  }
+    "name": "@sidmonta/babelelibrary",
+    "version": "0.0.1",
+    "description": "Tools and Utilities for Babele project",
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/"
+    },
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sidmonta/BabeleLibrary.git"
+    },
+    "keywords": [
+        "lod",
+        "typescript",
+        "tools",
+        "fp"
+    ],
+    "author": "sidmonta <sidmonta.15@gmail.com>",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/sidmonta/BabeleLibrary/issues"
+    },
+    "homepage": "https://github.com/sidmonta/BabeleLibrary#readme",
+    "devDependencies": {
+        "node-ts": "^5.0.4",
+        "typescript": "^3.8.2"
+    }
 }
