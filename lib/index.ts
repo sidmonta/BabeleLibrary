@@ -1,1 +1,5 @@
-console.log('Mario Rossi')
+import { match } from './Tools'
+
+export {
+  match
+}
