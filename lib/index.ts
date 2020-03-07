@@ -1,5 +1,4 @@
-import { match } from './Tools'
+import * as Tools from './tools'
+import * as Lod from './lods'
 
-export {
-  match
-}
+export { Tools, Lod }
