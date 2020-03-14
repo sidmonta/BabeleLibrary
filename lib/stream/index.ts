@@ -4,6 +4,7 @@ import { catchError, map, switchMap, filter } from 'rxjs/operators'
 import { path, hasPath } from 'ramda'
 
 import QuadFactory from '../lods/QuadFactory'
+import { Quad } from 'n3'
 
 /**
  * Trasforma uno stream di dati in un Observable
@@ -58,7 +59,7 @@ const checkContentType = (data: AjaxResponse) =>
  * @param {string} uri uri del record da cui ottenere l'RDF
  * @returns {Observable<Quad>} Observable di quad
  */
-export function fatchSPARQL(url: string) {
+export function fatchSPARQL(url: string): Observable<Quad | string> {
   return ajax({
     url,
     method: 'GET',
@@ -68,7 +69,9 @@ export function fatchSPARQL(url: string) {
   }).pipe(
     filter(checkContentType),
     map(path(['response', 'data'])),
-    switchMap(data => QuadFactory.generateFromString(data, true)),
-    catchError((_: AjaxResponse) => of({ body: '' }))
+    switchMap((data: unknown) =>
+      QuadFactory.generateFromString(data as string, true)
+    ),
+    catchError((_: AjaxResponse) => of(''))
   )
 }

@@ -55,8 +55,9 @@ export const trimCh = curry((ch: string, x: string): string =>
 /**
  * Controlla se una stringa è un URL valido
  * @param {string} str stringa da controllare
+ * @returns {boolean} se è un URL valido
  */
-export const validURL = (str: string) => {
+export const validURL = (str: string): boolean => {
   const pattern = new RegExp(
     '^(https?:\\/\\/)?' + // protocol
     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
