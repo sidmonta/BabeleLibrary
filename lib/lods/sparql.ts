@@ -1,6 +1,5 @@
 import FormData from 'form-data'
-import { pipe, prop, path, groupBy, has, isEmpty } from 'ramda'
-import { validURL } from '../tools'
+import { pipe, prop, path } from 'ramda'
 
 /**
  * Formatta una query SPARQL per essere inviata con una POST ad un triplestore
