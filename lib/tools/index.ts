@@ -43,7 +43,7 @@ export const match = <T, E>(x: T) => ({
 /**
  * Una funzione che torna sempre TRUE indipendentemente dai parametri passati
  */
-export const alwaysTrue = (...params: unknown[]) => true
+export const alwaysTrue = (...params: unknown[]): boolean => true
 
 /**
  * Rimuove un determinato carattere all'inizio o alla fine di una stringa
