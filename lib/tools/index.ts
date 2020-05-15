@@ -43,7 +43,7 @@ export const match = <T, E>(x: T) => ({
 /**
  * Una funzione che torna sempre TRUE indipendentemente dai parametri passati
  */
-export const alwaysTrue = (...params: unknown[]): boolean => true
+export const alwaysTrue = (..._: unknown[]): boolean => true
 
 /**
  * Rimuove un determinato carattere all'inizio o alla fine di una stringa
@@ -64,7 +64,7 @@ export const validURL = (str: string): boolean => {
     '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
     '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
     '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-      '(\\#[-a-z\\d_]*)?$',
+    '(\\#[-a-z\\d_]*)?$',
     'i'
   ) // fragment locator
   return !!pattern.test(str)

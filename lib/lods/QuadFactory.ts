@@ -8,7 +8,7 @@ import { fromStream } from '../stream'
 import RDFConverter from './RDFConverter'
 import { validURL } from '../tools'
 
-const { namedNode, literal, quad, blankNode } = N3.DataFactory
+//const { namedNode, literal, quad } = N3.DataFactory
 
 export default class QuadFactory {
   /**
@@ -48,7 +48,7 @@ export default class QuadFactory {
         return from(RDFConverter.convertFrom(text, 'xml', 'n3')).pipe(
           mergeMap((tt: string) => {
             const parser = new N3.Parser()
-            const res = parser.parse(tt)
+            const res = parser.parse(tt) as N3.Quad[]
 
             return from(res)
           })
@@ -56,7 +56,7 @@ export default class QuadFactory {
       }
     } else {
       const parser = new N3.Parser()
-      const res = parser.parse(text)
+      const res = parser.parse(text) as N3.Quad[]
 
       return from(res)
     }
@@ -80,10 +80,10 @@ export default class QuadFactory {
     return from(quads).pipe(
       map((q: Array<string>) => {
         const [subject, predicate, object] = q.map(el =>
-          validURL(el) ? namedNode(el) : literal(el)
+          validURL(el) ? N3.DataFactory.namedNode(el) : N3.DataFactory.literal(el)
         )
 
-        return quad(subject as NamedNode, predicate as NamedNode, object)
+        return N3.DataFactory.quad(subject as NamedNode, predicate as NamedNode, object)
       })
     )
   }
@@ -105,10 +105,10 @@ export default class QuadFactory {
   ): Observable<Quad> {
     return from(quads).pipe(
       map((q: { s: string; p: string; o: string }) =>
-        quad(
-          namedNode(q.s),
-          namedNode(q.p),
-          validURL(q.o) ? namedNode(q.o) : literal(q.o)
+        N3.DataFactory.quad(
+          N3.DataFactory.namedNode(q.s),
+          N3.DataFactory.namedNode(q.p),
+          validURL(q.o) ? N3.DataFactory.namedNode(q.o) : N3.DataFactory.literal(q.o)
         )
       )
     )

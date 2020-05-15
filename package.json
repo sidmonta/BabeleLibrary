@@ -5,9 +5,15 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
-  "main": "index.js",
+  "files": [
+    "lib",
+    "build"
+  ],
+  "main": "./build/index.js",
+  "module": "./build/index.js",
+  "typings": "./build/index.d.ts",
   "scripts": {
-    "build": "webpack"
+    "build": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -30,9 +36,7 @@
     "@types/ramda": "^0.26.43",
     "node-ts": "^5.0.4",
     "ts-loader": "^6.2.1",
-    "typescript": "^3.8.3",
-    "webpack": "^4.42.0",
-    "webpack-cli": "^3.3.11"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "axios": "^0.19.2",
