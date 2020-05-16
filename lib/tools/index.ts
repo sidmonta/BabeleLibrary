@@ -69,3 +69,8 @@ export const validURL = (str: string): boolean => {
   ) // fragment locator
   return !!pattern.test(str)
 }
+
+/**
+ * Definisce un array che non può essere vuoto
+ */
+export type NonEmptyArray<T> = [T, ...T[]]
