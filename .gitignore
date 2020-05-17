@@ -108,4 +108,5 @@ dist
 # App specific
 index.js
 .vscode/
+.idea/
 build
