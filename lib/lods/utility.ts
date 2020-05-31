@@ -10,13 +10,13 @@ import { trimCh } from '../tools'
 export const getID: (uri: string) => string | undefined = uri => {
   let urld = parse(uri).path
   let get = pipe(trimCh('/'), split(/\/|#/), last)
-  return urld ? get(uri) : undefined
+  return urld ? get(uri) as string : undefined
 }
 
 /**
  * Controlla la presenza di una Regex all'interno di una tripla
  */
-export const checkQuad = curry((fil: string, quad: Quad) => {
+export const checkQuad = curry((fil: string, quad: Quad): boolean => {
   const regex = new RegExp(fil, 'gi')
   return Boolean(
     quad?.object?.value?.match(regex) ||

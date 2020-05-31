@@ -83,7 +83,6 @@ const checkContentType = (data: FetchResponse) =>
  * @returns {Observable<Quad>} Observable di quad
  */
 export function fatchSPARQL (url: string): Observable<Quad> {
-  console.log('Fetch', url)
   return fetchContent({
     url: {
       url,
