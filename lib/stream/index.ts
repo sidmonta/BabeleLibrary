@@ -82,7 +82,7 @@ const checkContentType = (data: FetchResponse) =>
  * @param {string} url uri del record da cui ottenere l'RDF
  * @returns {Observable<Quad>} Observable di quad
  */
-export function fatchSPARQL (url: string): Observable<Quad> {
+export function fetchSPARQL (url: string): Observable<Quad> {
   return fetchContent({
     url: {
       url,

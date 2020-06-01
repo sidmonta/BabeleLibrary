@@ -9,7 +9,7 @@ import { trimCh } from '../tools'
  */
 export const getID: (uri: string) => string | undefined = uri => {
   let urld = parse(uri).path
-  let get = pipe(trimCh('/'), split(/\/|#/), last)
+  let get = pipe(trimCh('/'), split(/[\/#]/), last)
   return urld ? get(uri) as string : undefined
 }
 
