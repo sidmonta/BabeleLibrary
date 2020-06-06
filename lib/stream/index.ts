@@ -5,6 +5,7 @@ import { path, hasPath } from 'ramda'
 import axios, { AxiosResponse } from 'axios'
 
 import QuadFactory from '../lods/QuadFactory'
+import { allCheck } from '../lods/changeUri'
 import { Quad, DataFactory } from 'n3'
 
 /**
@@ -85,7 +86,7 @@ const checkContentType = (data: FetchResponse) =>
 export function fetchSPARQL (url: string): Observable<Quad> {
   return fetchContent({
     url: {
-      url,
+      url: allCheck(url),
       method: 'GET',
       headers: {
         Accept: 'application/rdf+xml'

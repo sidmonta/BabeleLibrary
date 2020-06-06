@@ -3,6 +3,7 @@ import RDFConverter from './RDFConverter'
 import RDFAnnotation from './RDFAnnotation'
 import QuadFactory from './QuadFactory'
 import * as SPARQL from './sparql'
+import * as ChangeURI from './changeUri'
 
 export {
   getID,
@@ -11,5 +12,6 @@ export {
   RDFConverter,
   RDFAnnotation,
   QuadFactory,
-  SPARQL
+  SPARQL,
+  ChangeURI
 }
