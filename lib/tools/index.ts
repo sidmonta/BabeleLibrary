@@ -74,3 +74,5 @@ export const validURL = (str: string): boolean => {
  * Definisce un array che non può essere vuoto
  */
 export type NonEmptyArray<T> = [T, ...T[]]
+
+export * as WS from './WebSocketClient'
