@@ -17,7 +17,10 @@ export const checkWikidata: (uri: URI) => string = createCheck('wikidata', pipe(
 // VIAF
 export const checkViaf: (uri: URI) => string = createCheck('viaf', (uri: URI) => uri + '/rdf.xml')
 
-export const allCheck = pipe(checkWikidata, checkViaf)
+// OpenLibrary
+export const checkOpenLibrary: (uri: URI) => string = createCheck('openlibrary', (uri: URI) => uri + '.rdf')
+
+export const allCheck = pipe(checkWikidata, checkViaf, checkOpenLibrary)
 
 function baseChangeURI() {
   let aggregate: NonEmptyArray<(uri: URI) => URI> = [checkWikidata, checkViaf]
