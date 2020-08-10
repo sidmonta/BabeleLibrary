@@ -12,7 +12,7 @@ export type WebSocketData<E extends EventType, P> = {
 
 export type WebSocketCallback<P> = (payload: P) => void
 
-export default class WebSocketClient<E extends EventType> {
+export class WebSocketClient<E extends EventType> {
   private readonly address: string = 'ws://localhost'
   private readonly port: string = '80'
 
@@ -59,7 +59,13 @@ export default class WebSocketClient<E extends EventType> {
 
   public send<P>(message: WebSocketData<E, P>): void {
     const strMessage = JSON.stringify(message)
-    this.webSocket.send(strMessage)
+
+    let interval = setInterval(() => {
+      if (this.webSocket.readyState === 1) {
+        this.webSocket.send(strMessage)
+        clearInterval(interval)
+      }
+    }, 400)
   }
 
   public emit<P>(eventType: E, payload: P) {

@@ -1,4 +1,4 @@
-import { curry } from 'ramda'
+import { curry, pipe } from 'ramda'
 
 /**
  * @private
@@ -75,4 +75,16 @@ export const validURL = (str: string): boolean => {
  */
 export type NonEmptyArray<T> = [T, ...T[]]
 
-export * as WS from './WebSocketClient'
+export const generateColorFromString: (s: string) => string = (s: string) => {
+  const hashCode = (s: string): number => s
+    .split('')
+    .reduce((hash: number, char: string) => hash + char.charCodeAt(0) + ((hash << 5) - hash), 0)
+  const intToRGB = (int: number): string => {
+    let c = (int & 0x00FFFFFF).toString(16).toUpperCase()
+    return '#' + "00000".substring(0, 6 - c.length) + c;
+  }
+
+  return pipe(hashCode, intToRGB)(s)
+}
+
+export * from './WebSocketClient'
