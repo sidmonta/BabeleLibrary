@@ -7,8 +7,18 @@ import { RdfXmlParser } from 'rdfxml-streaming-parser'
 import { fromStream } from '../stream'
 import RDFConverter from './RDFConverter'
 import { validURL } from '../tools'
+import parseRdfXML from './RdfXMLParser'
+import { tryCatch } from 'ramda'
+
+const parser = new N3.Parser()
+
 
 //const { namedNode, literal, quad } = N3.DataFactory
+
+const parse = (text: string): Observable<Quad> => {
+  const res = parser.parse(text) as N3.Quad[]
+  return from(res)
+}
 
 export default class QuadFactory {
   /**
@@ -16,7 +26,7 @@ export default class QuadFactory {
    * @param {string} filename file da convertire
    * @returns {Observable<Quad>} Observable di Quad
    */
-  public static generateFromFile(filename: string): Observable<Quad> {
+  public static generateFromFile (filename: string): Observable<Quad> {
     const rdfStream = createReadStream(filename)
     const streamParser =
       filename.endsWith('.rdf') || filename.endsWith('.xml')
@@ -33,32 +43,15 @@ export default class QuadFactory {
    * @param {boolean} rdf se il testo è in formato RDF, Default false
    * @returns {Observable<Quad>} Observable di Quad
    */
-  public static generateFromString(
+  public static generateFromString (
     text: string,
     rdf: boolean = false
   ): Observable<Quad> {
     if (rdf) {
-      const parser = new RdfXmlParser()
-      try {
-        parser.write(text)
-        parser.end()
-
-        return fromStream(parser)
-      } catch (e) {
-        return from(RDFConverter.convertFrom(text, 'xml', 'n3')).pipe(
-          mergeMap((tt: string) => {
-            const parser = new N3.Parser()
-            const res = parser.parse(tt) as N3.Quad[]
-
-            return from(res)
-          })
-        )
-      }
+      const toParse = tryCatch(parseRdfXML, (t) => RDFConverter.convertFrom(t, 'xml', 'n3'))(text)
+      return from(toParse).pipe(mergeMap(parse))
     } else {
-      const parser = new N3.Parser()
-      const res = parser.parse(text) as N3.Quad[]
-
-      return from(res)
+      return parse(text)
     }
   }
 
@@ -74,7 +67,7 @@ export default class QuadFactory {
    * @param {Array<Array<string>>} quads Triple da trasformare
    * @returns {Observable<Quad>} Observable di Quad
    */
-  public static generateFromArray(
+  public static generateFromArray (
     quads: Array<Array<string>>
   ): Observable<Quad> {
     return from(quads).pipe(
@@ -100,7 +93,7 @@ export default class QuadFactory {
    * @param {Array<{s: string, p: string, o: string}>} quads Triple da trasformare
    * @returns {Observable<Quad>} Observable di Quad
    */
-  public static generateFromObject(
+  public static generateFromObject (
     quads: Array<{ s: string; p: string; o: string }>
   ): Observable<Quad> {
     return from(quads).pipe(
