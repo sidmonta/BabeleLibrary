@@ -1,4 +1,6 @@
 import { curry, pipe } from 'ramda'
+import { parse } from 'url'
+import * as http from 'http'
 
 /**
  * @private
@@ -75,6 +77,10 @@ export const validURL = (str: string): boolean => {
  */
 export type NonEmptyArray<T> = [T, ...T[]]
 
+/**
+ * Genera un colore univoco a partire da una stringa di testo.
+ * @param s stringa da cui generare un colore
+ */
 export const generateColorFromString: (s: string) => string = (s: string) => {
   const hashCode = (s: string): number => s
     .split('')
@@ -88,3 +94,33 @@ export const generateColorFromString: (s: string) => string = (s: string) => {
 }
 
 export * from './WebSocketClient'
+
+/**
+ *
+ * @param endpoint
+ */
+export const pingEndpoint = async (endpoint: string): Promise<boolean> => {
+  const options: http.RequestOptions = {
+    method: 'HEAD',
+    host: parse(endpoint).host,
+    port: 80,
+    path: parse(endpoint).pathname,
+    timeout: 800,
+  }
+  return new Promise((resolve: (value: boolean) => void): void => {
+    try {
+      const req = http.request(options, function (r) {
+        resolve(r.statusCode == 200)
+      })
+      req.setTimeout(800, () => req.abort())
+      req.end()
+      req.on('error', function (err) {
+        console.error('Error on ping ' + endpoint, err)
+        resolve(false)
+      })
+    } catch (err) {
+      console.error('Error on ping ' + endpoint, err)
+      resolve(false)
+    }
+  })
+}

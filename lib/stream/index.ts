@@ -1,20 +1,21 @@
 import { AjaxResponse } from 'rxjs/ajax'
-import { Observable, of } from 'rxjs'
-import { map, switchMap, filter, catchError } from 'rxjs/operators'
+import { from, MonoTypeOperatorFunction, Observable, of, pipe } from 'rxjs'
+import { map, switchMap, filter, catchError, concatMap } from 'rxjs/operators'
 import { path, hasPath } from 'ramda'
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 
 import QuadFactory from '../lods/QuadFactory'
 import { allCheck } from '../lods/changeUri'
 import { Quad, DataFactory } from 'n3'
+import { pingEndpoint } from '../tools'
 
 /**
  * Tipo di ritorno di una richiesta fetch
  */
 export interface FetchResponse {
-    response: AxiosResponse,
-    body: any,
-    params: any
+  response: AxiosResponse,
+  body: any,
+  params: any
 }
 
 /**
@@ -58,7 +59,10 @@ export function fromStream (
   })
 }
 
-export function fetchContent ({ url, params }: any): Observable<FetchResponse> {
+export function fetchContent ({ url, params }: {
+  url: AxiosRequestConfig,
+  params?: unknown
+}): Observable<FetchResponse> {
   return new Observable((observer) => {
     axios(url)
       .then((response: AxiosResponse) => {
@@ -105,3 +109,21 @@ export function fetchSPARQL (url: string): Observable<Quad> {
     )))
   )
 }
+
+/**
+ * Implementa un operatore per Rxjs che esegue un filtro asyncrono sui dati che arrivano dallo stream
+ * @param predicate funzione che funge da predicato per la valutazione del dato
+ */
+export function asyncFilter<T> (predicate: (value: T, index: number) => Promise<boolean>): MonoTypeOperatorFunction<T> {
+  let inx = 0
+  return pipe(
+    concatMap((data: T) => from(predicate(data, inx++)).pipe(map((valid: boolean) => ({ valid, data })))),
+    filter(({ valid }) => valid),
+    map(({ data }) => data)
+  )
+}
+
+/**
+ * Operatore Rxjs che ritorna solo gli endpoint che sono accessibili
+ */
+export const filterByPing = () => asyncFilter(pingEndpoint)
