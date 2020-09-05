@@ -1,6 +1,6 @@
 {
   "name": "@sidmonta/babelelibrary",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Tools and Utilities for Babele project",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
