@@ -18,7 +18,8 @@ export class WebSocketClient<E extends EventType> {
 
   private webSocket: WebSocket
 
-  private eventsRegistry = new Map()
+  private eventsRegistry = new Map() // Map<type, Map<identify, WebSocketCallback>>
+  static countIdentify = 1
 
   constructor (opts?: WebSocketConfig) {
     this.address = opts?.address ?? this.address
@@ -34,23 +35,26 @@ export class WebSocketClient<E extends EventType> {
       }
       if (this.eventsRegistry.has(data.type)) {
         const callbacks = this.eventsRegistry.get(data.type)
-        if (callbacks) {
+        if (callbacks && callbacks.size) {
           callbacks.forEach(callback => callback(data.payload))
         }
       }
     }
   }
 
-  public on<P>(type: E, callback: WebSocketCallback<P>): void {
-    const callbacks = this.eventsRegistry.get(type) || []
-    callbacks.push(callback)
+  public on<P>(type: E, callback: WebSocketCallback<P>): number {
+    const callbacks: Map<number, WebSocketCallback<P>> = this.eventsRegistry.get(type) || new Map<number, WebSocketCallback<P>>()
+    const identify = WebSocketClient.countIdentify++
+    callbacks.set(identify, callback)
     this.eventsRegistry.set(type, callbacks)
+
+    return identify
   }
 
-  public removeListener<P>(type: E, callback?: WebSocketCallback<P>) {
-    if (callback) {
-      let callbacks = this.eventsRegistry.get(type) || []
-      callbacks = callbacks.filter(cl => cl !== callback)
+  public removeListener<P>(type: E, callbackIdentify?: number) {
+    if (callbackIdentify) {
+      let callbacks: Map<number, WebSocketCallback<P>> = this.eventsRegistry.get(type) || new Map<number, WebSocketCallback<P>>()
+      callbacks.delete(callbackIdentify)
       this.eventsRegistry.set(type, callbacks)
     } else {
       this.eventsRegistry.delete(type)
