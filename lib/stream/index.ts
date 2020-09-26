@@ -1,7 +1,7 @@
 import { AjaxResponse } from 'rxjs/ajax'
 import { from, MonoTypeOperatorFunction, Observable, of, pipe } from 'rxjs'
-import { map, switchMap, filter, catchError, concatMap } from 'rxjs/operators'
-import { path, hasPath } from 'ramda'
+import { map, switchMap, filter, catchError, concatMap, reduce } from 'rxjs/operators'
+import { path, hasPath, includes } from 'ramda'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 
 import QuadFactory from '../lods/QuadFactory'
@@ -127,3 +127,33 @@ export function asyncFilter<T> (predicate: (value: T, index: number) => Promise<
  * Operatore Rxjs che ritorna solo gli endpoint che sono accessibili
  */
 export const filterByPing = () => asyncFilter(pingEndpoint)
+
+
+export type LODDocument = {
+  content: string,
+  metadata: Record<string, string>,
+  [key: string]: unknown
+}
+
+export const formatDocument = (uri: string) => {
+  const seek: LODDocument = {
+    content: '',
+    metadata: {},
+    uri
+  }
+
+  const isContent = (predicate: string) => ['comment', 'content', 'description'].some(pk => includes(pk, predicate))
+
+  return fetchSPARQL(uri).pipe(
+    reduce((document: LODDocument, quad: Quad) => {
+      const predicate = quad.predicate.value
+      if (isContent(predicate)) {
+        document.content = document.content + quad.object.value
+      } else {
+        document.metadata[predicate] = quad.object.value
+      }
+      return document
+    }, seek)
+  )
+}
+
