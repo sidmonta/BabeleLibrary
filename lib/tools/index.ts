@@ -110,7 +110,7 @@ export const pingEndpoint = async (endpoint: string): Promise<boolean> => {
   return new Promise((resolve: (value: boolean) => void): void => {
     try {
       const req = http.request(options, function (r) {
-        resolve(r.statusCode == 200)
+        resolve(r.statusCode ? r.statusCode < 200 : false)
       })
       req.setTimeout(800, () => req.abort())
       req.end()

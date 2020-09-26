@@ -1,4 +1,4 @@
-import N3, { Quad, NamedNode } from 'n3'
+import * as N3 from 'n3'
 import { createReadStream } from 'fs'
 import { Observable, from } from 'rxjs'
 import { map, mergeMap } from 'rxjs/operators'
@@ -9,6 +9,9 @@ import RDFConverter from './RDFConverter'
 import { validURL } from '../tools'
 import parseRdfXML from './RdfXMLParser'
 import { tryCatch } from 'ramda'
+
+type Quad = N3.Quad
+type NamedNode = N3.NamedNode
 
 const parser = new N3.Parser()
 
