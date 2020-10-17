@@ -3,11 +3,11 @@ import { from, MonoTypeOperatorFunction, Observable, of, pipe } from 'rxjs'
 import { map, switchMap, filter, catchError, concatMap, reduce } from 'rxjs/operators'
 import { path, hasPath, includes } from 'ramda'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
-
 import QuadFactory from '../lods/QuadFactory'
 import { allCheck } from '../lods/changeUri'
 import { Quad, DataFactory } from 'n3'
 import { pingEndpoint } from '../tools'
+import { getID } from '../lods'
 
 /**
  * Tipo di ritorno di una richiesta fetch
@@ -59,6 +59,11 @@ export function fromStream (
   })
 }
 
+/**
+ * Effettua una chiamata fetch con axios il cui risultato è trasformato in stream
+ * @param url Configurazione per eseguire la chiamata con axios
+ * @param params configurazione aggiuntiva che viene appesa alla risposta.
+ */
 export function fetchContent ({ url, params }: {
   url: AxiosRequestConfig,
   params?: unknown
@@ -75,6 +80,10 @@ export function fetchContent ({ url, params }: {
   })
 }
 
+/**
+ * Verifica se il ContentType di una risposta sia in formato xml/rdf
+ * @param data Risposta di una chiamata fetch
+ */
 const checkContentType = (data: FetchResponse) =>
   Boolean(
     hasPath(['response', 'headers', 'content-type'], data) &&
@@ -97,11 +106,12 @@ export function fetchSPARQL (url: string): Observable<Quad> {
       }
     }
   }).pipe(
-    filter(checkContentType),
-    map(path(['body'])),
+    filter(checkContentType), // Filtra solo la chiamata con il corretto ContentType
+    map(path(['body'])), // Estrapola il body della risposta
     switchMap((data: unknown) =>
-      QuadFactory.generateFromString(data as string, true)
+      QuadFactory.generateFromString(data as string, true) // Genera le triple a partire dalla risposta
     ),
+    // Se c'è un errore genera una tripla vuota
     catchError((_: AjaxResponse) => of(DataFactory.quad(
       DataFactory.blankNode(),
       DataFactory.variable(''),
@@ -128,13 +138,17 @@ export function asyncFilter<T> (predicate: (value: T, index: number) => Promise<
  */
 export const filterByPing = () => asyncFilter(pingEndpoint)
 
-
+// Definisce un "Documento" LOD
 export type LODDocument = {
-  content: string,
-  metadata: Record<string, string>,
-  [key: string]: unknown
+  content: string, // Contenuto, cioè contiene i valori delle triple che definiscono la descrizione del documento
+  metadata: Record<string, string>, // Insieme degli altre triple che definiscono il documento
+  [key: string]: unknown // Altri valori
 }
 
+/**
+ * Metodo che a partire da un URI definisce un LODDocument
+ * @param uri della risorsa da formattare
+ */
 export const formatDocument = (uri: string) => {
   const seek: LODDocument = {
     content: '',
@@ -142,15 +156,18 @@ export const formatDocument = (uri: string) => {
     uri
   }
 
+  // Determina se una tripla fa parte del contenuto del documento o meno
   const isContent = (predicate: string) => ['comment', 'content', 'description'].some(pk => includes(pk, predicate))
 
+  // Recupera le triple della risorsa
   return fetchSPARQL(uri).pipe(
     reduce((document: LODDocument, quad: Quad) => {
       const predicate = quad.predicate.value
       if (isContent(predicate)) {
         document.content = document.content + quad.object.value
       } else {
-        document.metadata[predicate] = quad.object.value
+        let idx: string = getID(predicate) || predicate
+        document.metadata[idx] = quad.object.value
       }
       return document
     }, seek)

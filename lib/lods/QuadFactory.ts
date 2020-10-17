@@ -10,19 +10,34 @@ import { validURL } from '../tools'
 import parseRdfXML from './RdfXMLParser'
 import { tryCatch } from 'ramda'
 
+/**
+ * Alias
+ */
 type Quad = N3.Quad
 type NamedNode = N3.NamedNode
 
+// Iniziallizzazione del parser N3 globale (non serve inizializzarlo ad ogni utilizzo)
 const parser = new N3.Parser()
-
 
 //const { namedNode, literal, quad } = N3.DataFactory
 
+/**
+ * Effettua un parse da una stringa in formato N3 in array di triple, transformandole poi in stream
+ * @param text stringa di testo contenente Turtle da convertire
+ */
 const parse = (text: string): Observable<Quad> => {
   const res = parser.parse(text) as N3.Quad[]
   return from(res)
 }
+/**
+ * Provo per prima cosa a convertire RDF in N3 con un metodo veloce, se qualcosa va storto provo con i tool online
+ */
+const convertXmlWthFallback: (xml: string) => Promise<string> = tryCatch(parseRdfXML, (t) => RDFConverter.convertFrom(t, 'xml', 'n3'))
 
+/**
+ * @class
+ * Classe statica che definisce diversi metodi per la generazione di Triple a partire da vari formati
+ */
 export default class QuadFactory {
   /**
    * Trasforma un file di triple in uno Observable di Quad
@@ -41,7 +56,7 @@ export default class QuadFactory {
   }
 
   /**
-   * Trasforma una stringa in un Onservable di Quad
+   * Trasforma una stringa in un Observable di Quad
    * @param {string} text testo da convertire
    * @param {boolean} rdf se il testo è in formato RDF, Default false
    * @returns {Observable<Quad>} Observable di Quad
@@ -50,10 +65,13 @@ export default class QuadFactory {
     text: string,
     rdf: boolean = false
   ): Observable<Quad> {
-    if (rdf) {
-      const toParse = tryCatch(parseRdfXML, (t) => RDFConverter.convertFrom(t, 'xml', 'n3'))(text)
+    if (rdf) { // Se la stringa è in formato RDF allora va convertita in formato N3
+      // Effettuo la conversione da XML a N3
+      const toParse: Promise<string> = convertXmlWthFallback(text)
+      // Dal testo parsificato poi eseguo il parse per ottenere lo stream di triple
       return from(toParse).pipe(mergeMap(parse))
     } else {
+      // Se è già in formato n3 eseguo direttamente il parse
       return parse(text)
     }
   }

@@ -29,6 +29,10 @@ export const checkQuad = curry((fil: string, quad: Quad): boolean => {
 
 const encodeCharacter = (char: string): string =>
   '%' + char.charCodeAt(0).toString(16)
+/**
+ * Custom encodeURIComponent
+ * @param str
+ */
 export const fixedEncodeURIComponent = (str: string): string =>
   encodeURIComponent(str).replace(/[!'()*]/g, encodeCharacter)
 

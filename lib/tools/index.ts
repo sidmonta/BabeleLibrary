@@ -80,6 +80,7 @@ export type NonEmptyArray<T> = [T, ...T[]]
 /**
  * Genera un colore univoco a partire da una stringa di testo.
  * @param s stringa da cui generare un colore
+ * @return colore esadecimale
  */
 export const generateColorFromString: (s: string) => string = (s: string) => {
   const hashCode = (s: string): number => s
@@ -93,11 +94,15 @@ export const generateColorFromString: (s: string) => string = (s: string) => {
   return pipe(hashCode, intToRGB)(s)
 }
 
+/**
+ * Tools contiene anche tutti gli strumenti per la gestione dei WebSocket
+ */
 export * from './WebSocketClient'
 
 /**
- *
- * @param endpoint
+ * Funzione per eseguire un ping ad un endpoint qualunque.
+ * Utile per sapere se la risorsa web richiesta è accessibile
+ * @param endpoint endpoint da controllarne la reperibilità
  */
 export const pingEndpoint = async (endpoint: string): Promise<boolean> => {
   const options: http.RequestOptions = {

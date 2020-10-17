@@ -4,9 +4,6 @@ import FormData from 'form-data'
 type OutputFormat = 'rdfa' | 'microdata' | 'xml' | 'n3' | 'nt' | 'json-ld'
 type InputFormat = OutputFormat
 
-// TODO: Implementare senza servizi esterni il convertitore, così da essere
-//       autonomo e non vincolato ad altri servizi.
-
 /**
  * Classe statica che utilizza il servizio <http://rdf-translator.appspot.com>
  * per la conversione in vari formati LOD di una stringa.
@@ -15,6 +12,13 @@ type InputFormat = OutputFormat
  *
  */
 export default class RDFConverter {
+  /**
+   * Converte utilizzando il servizio rdf-translator
+   * @param str stringa da convertire
+   * @param source formato della stringa da convertire
+   * @param target formato delle conversione
+   * @private
+   */
   private static rdfTranslator(str: string, source: string, target: string) {
     const url = `http://rdf-translator.appspot.com/convert/${source}/${target}/content`
     const form = new FormData()
@@ -22,6 +26,13 @@ export default class RDFConverter {
     return RDFConverter.runExecution(url, form)
   }
 
+  /**
+   * Converte utilizzando il servizio Easy Rdf Converter
+   * @param str stringa da convertire
+   * @param source formato della stringa da convertire
+   * @param target formato delle conversione
+   * @private
+   */
   private static easyRdfConvert(str: string, source: string, target: string) {
     const mapFormat = {
       xml: 'rdfxml',
@@ -66,15 +77,23 @@ export default class RDFConverter {
     try {
       return await RDFConverter.rdfTranslator(str, input, output)
     } catch (err) {
+      // Uso Easy RDF Converter come fallback
       console.error(err)
       return await RDFConverter.easyRdfConvert(str, input, output)
     }
   }
 
+  /**
+   * Effettua la chiamata al servizio
+   * @param url
+   * @param form
+   * @private
+   */
   private static runExecution(url, form) {
     return new Promise<string>((resolve, reject) => {
       let data: any = form
       let opt = {}
+      // Nel caso si stia utilizzando form-data di nodejs e non del browser
       if (form.getBuffer) {
         data = form.getBuffer()
         opt = { headers: { ...form.getHeaders() } }
