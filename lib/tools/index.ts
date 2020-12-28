@@ -1,4 +1,4 @@
-import { curry, pipe } from 'ramda'
+import { pipe } from 'ramda'
 import { parse } from 'url'
 import * as http from 'http'
 
@@ -50,9 +50,8 @@ export const alwaysTrue = (..._: unknown[]): boolean => true
 /**
  * Rimuove un determinato carattere all'inizio o alla fine di una stringa
  */
-export const trimCh = curry((ch: string, x: string): string =>
+export const trimCh = (ch: string) => (x: string): string =>
   x.replace(new RegExp(`^${ch}+|${ch}+$`, 'g'), '')
-)
 
 /**
  * Controlla se una stringa è un URL valido

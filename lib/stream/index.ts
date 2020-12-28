@@ -1,7 +1,7 @@
 import { AjaxResponse } from 'rxjs/ajax'
 import { from, MonoTypeOperatorFunction, Observable, of, pipe } from 'rxjs'
 import { map, switchMap, filter, catchError, concatMap, reduce } from 'rxjs/operators'
-import { path, hasPath, includes } from 'ramda'
+import { path, hasPath, includes, isEmpty } from 'ramda'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import QuadFactory from '../lods/QuadFactory'
 import { allCheck } from '../lods/changeUri'
@@ -167,7 +167,9 @@ export const formatDocument = (uri: string) => {
         document.content = document.content + quad.object.value
       } else {
         let idx: string = getID(predicate) || predicate
-        document.metadata[idx] = quad.object.value
+        if (!isEmpty(idx)) {
+          document.metadata[idx] = quad.object.value
+        }
       }
       return document
     }, seek)
