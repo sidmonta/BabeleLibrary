@@ -32,7 +32,7 @@ const parse = (text: string): Observable<Quad> => {
 /**
  * Provo per prima cosa a convertire RDF in N3 con un metodo veloce, se qualcosa va storto provo con i tool online
  */
-const convertXmlWthFallback: (xml: string) => Promise<string> = tryCatch(parseRdfXML, (t) => RDFConverter.convertFrom(t, 'xml', 'n3'))
+const convertXmlWthFallback: (xml: string) => Promise<string> = tryCatch(parseRdfXML, (t: string) => RDFConverter.convertFrom(t, 'xml', 'n3'))
 
 /**
  * @class
@@ -44,7 +44,7 @@ export default class QuadFactory {
    * @param {string} filename file da convertire
    * @returns {Observable<Quad>} Observable di Quad
    */
-  public static generateFromFile (filename: string): Observable<Quad> {
+  public static generateFromFile(filename: string): Observable<Quad> {
     const rdfStream = createReadStream(filename)
     const streamParser =
       filename.endsWith('.rdf') || filename.endsWith('.xml')
@@ -61,7 +61,7 @@ export default class QuadFactory {
    * @param {boolean} rdf se il testo è in formato RDF, Default false
    * @returns {Observable<Quad>} Observable di Quad
    */
-  public static generateFromString (
+  public static generateFromString(
     text: string,
     rdf: boolean = false
   ): Observable<Quad> {
@@ -88,7 +88,7 @@ export default class QuadFactory {
    * @param {Array<Array<string>>} quads Triple da trasformare
    * @returns {Observable<Quad>} Observable di Quad
    */
-  public static generateFromArray (
+  public static generateFromArray(
     quads: Array<Array<string>>
   ): Observable<Quad> {
     return from(quads).pipe(
@@ -114,7 +114,7 @@ export default class QuadFactory {
    * @param {Array<{s: string, p: string, o: string}>} quads Triple da trasformare
    * @returns {Observable<Quad>} Observable di Quad
    */
-  public static generateFromObject (
+  public static generateFromObject(
     quads: Array<{ s: string; p: string; o: string }>
   ): Observable<Quad> {
     return from(quads).pipe(

@@ -32,18 +32,18 @@
   "homepage": "https://github.com/sidmonta/BabeleLibrary#readme",
   "devDependencies": {
     "@types/n3": "^1.1.6",
-    "@types/ramda": "^0.27.6",
+    "@types/ramda": "^0.27.38",
     "node-ts": "^5.0.5",
-    "ts-loader": "^7.0.5",
-    "typescript": "^3.9.3"
+    "ts-loader": "^8.0.18",
+    "typescript": "^4.2.3"
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "fast-xml-parser": "^3.17.4",
-    "form-data": "^3.0.0",
-    "n3": "^1.3.7",
+    "fast-xml-parser": "^3.18.0",
+    "form-data": "^3.0.1",
+    "n3": "^1.8.1",
     "ramda": "^0.27.0",
     "rdfxml-streaming-parser": "^1.3.5",
-    "rxjs": "^6.5.5"
+    "rxjs": "^6.6.6"
   }
 }
